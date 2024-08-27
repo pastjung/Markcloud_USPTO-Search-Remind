@@ -105,13 +105,14 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ./data/es01:/data/es01
+      - ./data/elasticsearch/es01:/usr/share/elasticsearch/data   # /usr/share/elasticsearch/data : Elasticsearch 컨테이너 내의 기본 설정 파일 경로
     ports:
       - "${ELASTICSEARCH_HOST_PORT}:${ELASTICSEARCH_SERVER_PORT}"
     env_file:
       .env
     networks:
       - search_service-network 
+
   es02:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
     container_name: es02
@@ -127,9 +128,10 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ./data/es02:/data/es02
+      - ./data/elasticsearch/es02:/usr/share/elasticsearch/data
     networks:
       - search_service-network 
+
   es03:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
     container_name: es03
@@ -145,7 +147,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ./data/es03:/data/es03
+      - ./data/elasticsearch/es03:/usr/share/elasticsearch/data
     networks:
       - search_service-network 
 
