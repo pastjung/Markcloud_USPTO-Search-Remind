@@ -6,8 +6,11 @@
 
 ## Current: ver. 1.0.0<br/>
 >* ver 1.0.0.
->   * FastAPI : Login_Service Container 추가
+>   * FastAPI : Login_Service, Crawling_Service Container 추가
 >   * MariaDB : User service Database 추가
+>   * MongoDB : Crawling Service Database 추가
+>   * Elasticsearch : 검색 엔진 Database 추가 ( 레플리카 설정 추가 )
+>   * Kibana : 모니터링 시스템 추가
 
 
 # 1. 프로그램 (프로젝트) 설명
@@ -22,10 +25,43 @@
     # 예시
     LOGIN_HOST_PORT=
     LOGIN_SERVER_PORT=
+
+    MARIADB_ID=
+    MARIADB_ROOT_PASSWORD=
+    MARIADB_DB_NAME=
+
+    MARIADB_HOST_PORT=
+    MARIADB_SERVER_PORT=
+
+    CRAWLING_HOST_PORT=
+    CRAWLING_SERVER_PORT=
+
+    MONGODB_HOST_PORT=
+    MONGODB_SERVER_PORT=
+
+    MONGODB_DB_NAME=
+    MONGODB_COLLECTION_NAME=
+
+    SEARCH_HOST_PORT=
+    SEARCH_SERVER_PORT=
+
+    ELASTIC_PASSWORD=
+    ELASTICSEARCH_INDEX=
+
+    KIBANA_HOST_PORT=
+    KIBANA_SERVER_PORT=
     ```
-- `LOGIN_HOST_PORT`와 `login_service/entrypoint.sh` 의 포트 번호를 일치시켜주세요
+- `LOGIN_SERVER_PORT`와 `login_service/entrypoint.sh` 의 포트 번호를 일치시켜주세요
     ```
     uvicorn service.main:app --host 0.0.0.0 --port 8000 --reload \
+    ```
+- `CRAWLING_SERVER_PORT`와 `crawling_service/entrypoint.sh` 의 포트 번호를 일치시켜주세요
+    ```
+    uvicorn service.main:app --host 0.0.0.0 --port 8001 --reload \
+    ```
+- `SEARCH_SERVER_PORT`와 `search_service/entrypoint.sh` 의 포트 번호를 일치시켜주세요
+    ```
+    uvicorn service.main:app --host 0.0.0.0 --port 8002 --reload \
     ```
 
 # 3. 구동 방법
@@ -43,6 +79,36 @@
     /project-root
     │
     ├── login-service/
+    │   ├── dockerfile
+    │   ├── entrypoint.sh
+    │   ├── requirements.txt
+    │   ├── setup.txt
+    │   ├── venv/
+    │   ├── service/
+    │   │   ├── main.py
+    │   │   ├── models/
+    │   │   ├── routers/
+    │   │   └── crud/
+    │   └── config/
+    │       ├── config.ini
+    │       └── database.py
+    │
+    ├── crawling-service/
+    │   ├── dockerfile
+    │   ├── entrypoint.sh
+    │   ├── requirements.txt
+    │   ├── setup.txt
+    │   ├── venv/
+    │   ├── service/
+    │   │   ├── main.py
+    │   │   ├── models/
+    │   │   ├── routers/
+    │   │   └── crud/
+    │   └── config/
+    │       ├── config.ini
+    │       └── database.py
+    │
+    ├── search-service/
     │   ├── dockerfile
     │   ├── entrypoint.sh
     │   ├── requirements.txt

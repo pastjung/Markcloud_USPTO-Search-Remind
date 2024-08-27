@@ -90,6 +90,82 @@ services:
       - crawling_service-network
       - search_service-network  
 
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./data/es01:/data/es01
+    ports:
+      - "${ELASTICSEARCH_HOST_PORT}:${ELASTICSEARCH_SERVER_PORT}"
+    env_file:
+      .env
+    networks:
+      - search_service-network 
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./data/es02:/data/es02
+    networks:
+      - search_service-network 
+  es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./data/es03:/data/es03
+    networks:
+      - search_service-network 
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0  # Kibana 버전 = Elasticsearch 버전
+    container_name: 'kibana-container'
+    restart: always
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es01:${ELASTICSEARCH_SERVER_PORT}
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}  # Elasticsearch 비밀번호와 동일
+      - SERVER_NAME=kibana
+    ports:
+      - "${KIBANA_HOST_PORT}:${KIBANA_SERVER_PORT}"
+    depends_on:
+      - es01
+    env_file:
+      - .env
+    networks:
+      - search_service-network 
+
 networks:
   login_service-network:
     name: login_service
