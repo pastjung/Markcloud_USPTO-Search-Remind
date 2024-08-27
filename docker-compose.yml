@@ -1,5 +1,5 @@
 services:
-  login_service:
+  login_app:
     build:
       context: ./login_service
       dockerfile: dockerfile
@@ -9,9 +9,25 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./login_service:/login_app
+      - ./login_service:/login_service  # 프로젝트와 컨테이너를 마운트 시켜 즉각적으로 반영되도록 설정
     ports:
       - "${LOGIN_HOST_PORT}:${LOGIN_SERVER_PORT}"
     env_file:
       - .env
+    depends_on:
+      - user_db
+    
+  user_db:
+    image: mariadb:latest
+    container_name: 'user_db-cotainer'
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}"  # 루트 사용자 비밀번호
+      - "MYSQL_DATABASE=${MARIADB_DB_NAME}"             # 자동 생성할 DB 이름
+    volumes:
+      - ./data/user_db:/data/user_db/mariadb
+    env_file:
+      - .env
+    ports:
+      - "${MARIADB_HOST_PORT}:${MARIADB_SERVER_PORT}"
     

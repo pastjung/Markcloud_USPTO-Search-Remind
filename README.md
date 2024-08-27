@@ -7,6 +7,7 @@
 ## Current: ver. 1.0.0<br/>
 >* ver 1.0.0.
 >   * FastAPI : Login_Service Container 추가
+>   * MariaDB : User service Database 추가
 
 
 # 1. 프로그램 (프로젝트) 설명
