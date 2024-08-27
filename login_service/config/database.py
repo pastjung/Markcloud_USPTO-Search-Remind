@@ -1,15 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from starlette.config import Config
+import os
 
 # 환경 변수 불러오기
-config = Config('login_service/.env')
-
-id = config('MARIADB_ID')
-password = config('MARIADB_ROOT_PASSWORD')
-db_name = config('MARIADB_DB_NAME')
-db_port = config('MARIADB_SERVER_PORT')
+id = os.getenv('MARIADB_ID')
+password = os.getenv('MARIADB_ROOT_PASSWORD')
+db_name = os.getenv('MARIADB_DB_NAME')
+db_port = os.getenv('MARIADB_SERVER_PORT')
 
 # DB 연결 설정
 DB_URL=f'mysql+pymysql://{id}:{password}@user_db:{db_port}/{db_name}'
