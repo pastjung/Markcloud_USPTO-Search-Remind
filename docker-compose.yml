@@ -16,6 +16,8 @@ services:
       - .env
     depends_on:
       - user_db
+    networks:
+      - login_service-network
     
   user_db:
     image: mariadb:latest
@@ -30,4 +32,45 @@ services:
       - .env
     ports:
       - "${MARIADB_HOST_PORT}:${MARIADB_SERVER_PORT}"
+    networks:
+      - login_service-network
+  
+  crawling_app:
+    build:
+      context: ./crawling_service
+      dockerfile: dockerfile
+    image: 'crawling_service-image:latest'
+    container_name: 'crawling_service-container'
+    restart: always
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./crawling_service:/crawling_service
+    ports:
+      - "${CRAWLING_HOST_PORT}:${CRAWLING_SERVER_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - crawling_db
+    networks:
+      - crawling_service-network  
+
+  crawling_db:
+    image: mongo:latest
+    container_name: 'crawling_db-container'
+    restart: always
+    volumes:
+      - ./data/crawling_db:/data/crawling_db/mongodb
+    env_file:
+      - .env
+    ports:
+      - '${MONGODB_HOST_PORT}:${MONGODB_SERVER_PORT}'
+    networks:
+      - crawling_service-network
+
+networks:
+  login_service-network:
+    name: login_service
+  crawling_service-network:
+    name: crawling_service
     
