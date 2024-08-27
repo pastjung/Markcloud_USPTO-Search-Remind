@@ -1,0 +1,17 @@
+services:
+  login_service:
+    build:
+      context: ./login_service
+      dockerfile: dockerfile
+    image: 'login_service-image:latest'
+    container_name: 'login_service-container'
+    restart: always
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./login_service:/login_app
+    ports:
+      - "${LOGIN_HOST_PORT}:${LOGIN_SERVER_PORT}"
+    env_file:
+      - .env
+    
