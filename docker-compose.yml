@@ -67,10 +67,34 @@ services:
       - '${MONGODB_HOST_PORT}:${MONGODB_SERVER_PORT}'
     networks:
       - crawling_service-network
+      - search_service-network  
+
+  search_app:
+    build:
+      context: ./search_service
+      dockerfile: dockerfile
+    image: 'search_service-image:latest'
+    container_name: 'search_service-container'
+    restart: always
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./search_service:/search_service
+    ports:
+      - "${SEARCH_HOST_PORT}:${SEARCH_SERVER_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - crawling_db
+    networks:
+      - crawling_service-network
+      - search_service-network  
 
 networks:
   login_service-network:
     name: login_service
   crawling_service-network:
     name: crawling_service
+  search_service-network:
+    name: search_service
     
