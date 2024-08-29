@@ -42,18 +42,16 @@ def verify_jwt(access_token: str, refresh_token: str, connection, response: Resp
     try:
         payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
         return JwtClaim(**payload)
-        # payload의 id를 사용해 사용자를 찾고, 사용자가 존재하는지 검증
     except ExpiredSignatureError:       
         # access_token 만료    
         try:
             # refresh_token 검증
-            sql = f'SELECT username FROM refresh_token WHERE token = "{refresh_token}"'
+            sql = f'SELECT * FROM refresh_token WHERE token = "{refresh_token}"'
             result = jwt_repository.send_query(sql, connection)
-            user_id = result.get('user_id')
             
             # 새로운 access_token 발급
             access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-            claim={"user_id": user_id}
+            claim={"user_id": result.user_id}
             claim.update({"exp": datetime.now(timezone.utc) + access_token_expires})
             new_access_token = jwt.encode(claim, SECRET_KEY, algorithm=ALGORITHM)
 
