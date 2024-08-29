@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from sqlalchemy import text
 from core.docs import *
 from core.database import Base, engine
-from sqlalchemy import text
+from router import user_router
 
 def get_server():
     server = FastAPI(
@@ -49,3 +50,5 @@ async def mariadb_ping():
     except Exception as e:
         # 연결 오류 발생 시
         raise HTTPException(status_code=500, detail=f"Database connection error: {str(e)}")
+    
+app.include_router(user_router.router, tags=['User'])
