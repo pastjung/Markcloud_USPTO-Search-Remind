@@ -4,7 +4,10 @@ from fastapi.middleware.gzip import GZipMiddleware
 from sqlalchemy import text
 from core.docs import *
 from core.database import Base, engine
-from router import user_router
+from router import user_router, jwt_router
+
+from model.user_model import User
+from model.jwt_model import RefreshToken, Blacklist
 
 def get_server():
     server = FastAPI(
@@ -33,6 +36,11 @@ Base.metadata.create_all(bind=engine)
 # Fastapi 실행
 app = get_server()
 
+import logging
+logger = logging.getLogger("uvicorn.logging")
+logger.info("Server Start!!")
+
+
 @app.get('/ping', tags=['Root'])
 def ping():
     return 200
@@ -52,3 +60,5 @@ async def mariadb_ping():
         raise HTTPException(status_code=500, detail=f"Database connection error: {str(e)}")
     
 app.include_router(user_router.router, tags=['User'])
+app.include_router(jwt_router.router, tags=['Jwt'])
+
