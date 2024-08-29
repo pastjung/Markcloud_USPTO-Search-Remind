@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from .docs import *
-from config.database import Base, engine
+from core.docs import *
+from core.database import Base, engine
 from sqlalchemy import text
 
 def get_server():

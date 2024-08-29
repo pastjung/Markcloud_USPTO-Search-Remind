@@ -95,15 +95,20 @@
     │   ├── entrypoint.sh
     │   ├── requirements.txt
     │   ├── setup.txt
+    │   ├── main.py
     │   ├── venv/
-    │   ├── service/
-    │   │   ├── main.py
+    │   ├── core/
     │   │   ├── docs.py
-    │   │   ├── models/
-    │   │   ├── routers/
-    │   │   └── crud/
-    │   └── config/
-    │       ├── config.ini
+    │   │   └── database.py
+    │   ├── model/
+    │   │   └── database.py
+    │   ├── repository/
+    │   │   └── database.py
+    │   ├── router/
+    │   │   └── database.py
+    │   ├── schema/
+    │   │   └── database.py
+    │   └── service/
     │       └── database.py
     │
     ├── crawling-service/
