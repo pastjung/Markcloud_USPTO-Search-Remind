@@ -12,10 +12,6 @@ db_port = os.getenv('MARIADB_SERVER_PORT')
 # DB 연결 설정
 DB_URL=f'mysql+pymysql://{id}:{password}@user_db:{db_port}/{db_name}'
 
-import logging
-logger = logging.getLogger("uvicorn.logging")
-logger.info(f'{DB_URL}')
-
 # 엔진 생성
 engine = create_engine(DB_URL, echo=True)   # echo=True : 실행되는 SQL 쿼리 확인
 
