@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Response
 import jwt
 from jwt import ExpiredSignatureError, InvalidTokenError, PyJWTError
 import os
@@ -23,8 +23,8 @@ def create_access_token(user_id: str):
     access_token = jwt.encode(claim, SECRET_KEY, algorithm=ALGORITHM)
     return access_token
 
-def create_refresh_token(user_id: str):
-    claim={"user_id": user_id}
+def create_refresh_token():
+    claim={}
     claim.update({"exp": datetime.now(timezone.utc) + refresh_token_expires})
     refresh_token = jwt.encode(claim, SECRET_KEY, algorithm=ALGORITHM)
     return refresh_token
@@ -34,18 +34,36 @@ def save_refresh_token(refresh_token: str, user_id:str, connection):
     jwt_repository.send_query(sql, connection, "save")
 
 # 토큰 검증
-def verify_jwt(access_token: str, connection) -> JwtClaim:
+def verify_jwt(access_token: str, refresh_token: str, connection, response: Response) -> JwtClaim:
     if is_blacklisted(access_token, connection)[0] > 0:
         raise PyJWTError("블랙리스트에 등록된 토큰입니다.")
     
+    # access_token 검증
     try:
         payload = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
         return JwtClaim(**payload)
         # payload의 id를 사용해 사용자를 찾고, 사용자가 존재하는지 검증
+    except ExpiredSignatureError:       
+        # access_token 만료    
+        try:
+            # refresh_token 검증
+            sql = f'SELECT username FROM refresh_token WHERE token = "{refresh_token}"'
+            result = jwt_repository.send_query(sql, connection)
+            user_id = result.get('user_id')
+            
+            # 새로운 access_token 발급
+            access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            claim={"user_id": user_id}
+            claim.update({"exp": datetime.now(timezone.utc) + access_token_expires})
+            new_access_token = jwt.encode(claim, SECRET_KEY, algorithm=ALGORITHM)
+
+            # 쿠키 재설정 : access_token
+            response.set_cookie(key="access_token", value=new_access_token, expires=access_token_expires, httponly=True)
+            
+            return JwtClaim(**claim)
         
-    except ExpiredSignatureError:
-        # payload의 id를 사용해 사용자를 찾고, refresh token과 비교 후 access 토큰 재발급
-        raise HTTPException(status_code=400, detail="토큰이 만료되었습니다.")
+        except ExpiredSignatureError:
+            raise HTTPException(status_code=400, detail="Refresh Token 만료 : 다시 로그인 해주세요")
     except InvalidTokenError:
         raise HTTPException(status_code=400, detail="유효하지 않은 토큰입니다.")
     except PyJWTError:
@@ -62,8 +80,8 @@ def is_blacklisted(token: str, connection):
     return result
 
 # 블랙리스트 추가
-def add_to_blacklist(token: str, connection):
-    sql = f'INSERT INTO blacklist (token) VALUES ("{token}")'
+def add_to_blacklist(access_token: str, refresh_token: str, connection):
+    sql = f'INSERT INTO blacklist (token) VALUES ("{access_token}"), ("{refresh_token}")'
     jwt_repository.send_query(sql, connection, "save")
 
 # 블랙리스트 비우기
