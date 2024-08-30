@@ -4,14 +4,19 @@
 > last updated at: August 28, 2024
 
 
-## Current: ver. 1.0.0<br/>
+## Current: ver. 1.0.1<br/>
 >* ver 1.0.0.
->   * FastAPI : Login_Service, Crawling_Service Container 추가
+>   * Python  : Crawling_Service
+>   * FastAPI : Login_Service, Search_Service_Container 추가
 >   * MariaDB : User service Database 추가
 >   * MongoDB : Crawling Service Database 추가
 >   * Elasticsearch : 검색 엔진 Database 추가 ( 레플리카 설정 추가 → 클러스터 상태 = GREEN )
 >   * Kibana : 모니터링 시스템 추가
 
+>* ver 1.0.1.
+>    * Crawling_Service : Python -> FastAPI
+>    * Architecture : MSA -> MSA + DDD + Clean
+>    * 코드 최적화 + 프로젝트 통합
 
 # 1. 프로그램 (프로젝트) 설명
 
@@ -62,18 +67,25 @@
 
     KIBANA_HOST_PORT=
     KIBANA_SERVER_PORT=
+
+    SECRET_KEY=
+    ALGORITHM=
+    ACCESS_TOKEN_EXPIRE_MINUTES=
+    REFRESH_TOKEN_EXPIRE_DAYS=
+
+    URL=
     ```
 - `LOGIN_SERVER_PORT`와 `login_service/entrypoint.sh` 의 포트 번호를 일치시켜주세요
     ```
-    uvicorn service.main:app --host 0.0.0.0 --port 8000 --reload \
+    uvicorn main:app --host 0.0.0.0 --port 8000 --reload \
     ```
 - `CRAWLING_SERVER_PORT`와 `crawling_service/entrypoint.sh` 의 포트 번호를 일치시켜주세요
     ```
-    uvicorn service.main:app --host 0.0.0.0 --port 8001 --reload \
+    uvicorn main:app --host 0.0.0.0 --port 8001 --reload \
     ```
 - `SEARCH_SERVER_PORT`와 `search_service/entrypoint.sh` 의 포트 번호를 일치시켜주세요
     ```
-    uvicorn service.main:app --host 0.0.0.0 --port 8002 --reload \
+    uvicorn main:app --host 0.0.0.0 --port 8002 --reload \
     ```
 
 # 3. 구동 방법
@@ -90,62 +102,87 @@
 ```
     /project-root
     │
-    ├── login-service/
+    ├── crawling_service/
     │   ├── dockerfile
     │   ├── entrypoint.sh
+    │   ├── main.py
     │   ├── requirements.txt
     │   ├── setup.txt
+    │   ├── venv/
+    │   ├── core/
+    │   │   ├── config.ini
+    │   │   ├── docs.py
+    │   │   └── database.py
+    │   ├── model/
+    │   │   ├── ContentsHandler.py
+    │   │   ├── DatabaseManager.py
+    │   │   ├── DownloadManager.py
+    │   │   └── parser_model.py
+    │   ├── router/
+    │   │   ├── crawling_router.py
+    │   │   └── move_router.py
+    │   ├── service/
+    │   │   ├── crawling_service.py
+    │   │   └── move_service.py
+    │   └── utils/
+    │       ├── __init__.py
+    │       ├── arguments.py
+    │       ├── configs.py
+    │       ├── logs.py
+    │       └── proxies.py
+    │
+    ├── login_service/
+    │   ├── dockerfile
+    │   ├── entrypoint.sh
     │   ├── main.py
+    │   ├── requirements.txt
+    │   ├── setup.txt
+    │   ├── venv/
+    │   ├── core/
+    │   │   ├── config.ini
+    │   │   ├── docs.py
+    │   │   └── database.py
+    │   ├── model/
+    │   │   ├── jwt_model.py
+    │   │   └── user_model.py
+    │   ├── repository/
+    │   │   ├── jwt_repository.py
+    │   │   └── user_repository.py
+    │   ├── router/
+    │   │   ├── jwt_router.py
+    │   │   └── user_router.py
+    │   ├── schema/
+    │   │   ├── jwt_schema.py
+    │   │   └── user_schema.py
+    │   └── service/
+    │       ├── jwt_service.py
+    │       └── user_service.py
+    │
+    ├── search_service/
+    │   ├── dockerfile
+    │   ├── entrypoint.sh
+    │   ├── main.py
+    │   ├── requirements.txt
+    │   ├── setup.txt
     │   ├── venv/
     │   ├── core/
     │   │   ├── docs.py
     │   │   └── database.py
-    │   ├── model/
-    │   │   └── database.py
     │   ├── repository/
-    │   │   └── database.py
+    │   │   ├── es_search_repository.py
+    │   │   └── mongo_search_repository.py
     │   ├── router/
-    │   │   └── database.py
+    │   │   ├── es_search_router.py
+    │   │   └── mongo_search_router.py
     │   ├── schema/
-    │   │   └── database.py
+    │   │   └── mongo_search_schema.py
     │   └── service/
-    │       └── database.py
+    │       ├── es_search_service.py
+    │       └── mongo_search_service.py
     │
-    ├── crawling-service/
-    │   ├── dockerfile
-    │   ├── entrypoint.sh
-    │   ├── requirements.txt
-    │   ├── setup.txt
-    │   ├── venv/
-    │   ├── service/
-    │   │   ├── main.py
-    │   │   ├── docs.py
-    │   │   ├── models/
-    │   │   ├── routers/
-    │   │   └── crud/
-    │   └── config/
-    │       ├── config.ini
-    │       └── database.py
-    │
-    ├── search-service/
-    │   ├── dockerfile
-    │   ├── entrypoint.sh
-    │   ├── requirements.txt
-    │   ├── setup.txt
-    │   ├── venv/
-    │   ├── service/
-    │   │   ├── main.py
-    │   │   ├── docs.py
-    │   │   ├── models/
-    │   │   ├── routers/
-    │   │   └── crud/
-    │   └── config/
-    │       ├── config.ini
-    │       └── database.py
-    │
-    ├── .gitignore
-    ├── docker-compose.yml
     ├── .env
     ├── .env.template
+    ├── .gitignore
+    ├── docker-compose.yml
     └── README.md
 ```
