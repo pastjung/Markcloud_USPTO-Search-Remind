@@ -1,5 +1,5 @@
 #!/bin/sh
-if [ ! -d /login_app/venv ]; then \
+if [ ! -d /search_app/venv ]; then \
     echo "[INFO] >> Installing dependencies, please wait..." && \
     python -m venv venv && \
     source venv/bin/activate && \
