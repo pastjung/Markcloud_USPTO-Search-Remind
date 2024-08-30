@@ -28,7 +28,7 @@ services:
       - "MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}"  # 루트 사용자 비밀번호
       - "MYSQL_DATABASE=${MARIADB_DB_NAME}"             # 자동 생성할 DB 이름
     volumes:
-      - ./data/user_db:/data/user_db/mariadb
+      - ./data/user_db:/var/lib/mysql   # mariadb 기본 볼륨 저장 위치 -> 컨테이너의 기본 볼륨 저장 위치로 지정해야 데이터가 로컬에 저장이 됨
     env_file:
       - .env
     ports:
@@ -62,7 +62,7 @@ services:
     container_name: 'crawling_db-container'
     restart: always
     volumes:
-      - ./data/crawling_db:/data/crawling_db/mongodb
+      - ./data/crawling_db:/data/db   # mongodb 기본 볼륨 저장 위치
     env_file:
       - .env
     ports:
