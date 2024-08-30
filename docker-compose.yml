@@ -16,6 +16,7 @@ services:
       - .env
     depends_on:
       - user_db
+      - crawling_app
     networks:
       - login_service-network
     
@@ -52,6 +53,7 @@ services:
       - .env
     depends_on:
       - crawling_db
+      - es01
     networks:
       - crawling_service-network  
 
@@ -111,6 +113,7 @@ services:
     env_file:
       .env
     networks:
+      - crawling_service-network
       - search_service-network 
 
   es02:
@@ -130,6 +133,7 @@ services:
     volumes:
       - ./data/elasticsearch/es02:/usr/share/elasticsearch/data
     networks:
+      - crawling_service-network
       - search_service-network 
 
   es03:
@@ -149,6 +153,7 @@ services:
     volumes:
       - ./data/elasticsearch/es03:/usr/share/elasticsearch/data
     networks:
+      - crawling_service-network
       - search_service-network 
 
   kibana:

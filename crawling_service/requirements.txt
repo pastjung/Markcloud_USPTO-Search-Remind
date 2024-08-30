@@ -8,6 +8,8 @@ certifi==2024.8.30
 charset-normalizer==3.3.2
 click==8.1.7
 dnspython==2.6.1
+elastic-transport==8.15.0
+elasticsearch==8.15.0
 fastapi==0.112.2
 frozenlist==1.4.1
 h11==0.14.0
