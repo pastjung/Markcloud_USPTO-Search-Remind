@@ -4,7 +4,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 from core.docs import *
 from core.database import db
-from router import crawling_router, search_router, move_router
+from router import crawling_router, move_router
 
 def get_server():
     server = FastAPI(
@@ -44,5 +44,4 @@ async def mongodb_ping():
         raise HTTPException(status_code=503, detail="Unable to connect to MongoDB")
     
 app.include_router(crawling_router.router, tags=['Crawling'])
-app.include_router(search_router.router, tags=['Search'])
 app.include_router(move_router.router, tags=['Move'])
