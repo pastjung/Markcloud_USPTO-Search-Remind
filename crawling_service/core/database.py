@@ -9,4 +9,3 @@ collection_name = os.getenv('MONGODB_COLLECTION_NAME')
 client = MongoClient(f'mongodb://crawling_db:{db_port}/')
 db = client[db_name]
 collection = db[collection_name]
-
