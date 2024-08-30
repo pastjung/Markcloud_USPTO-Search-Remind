@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from .docs import *
-from config.database import db
+
+from core.docs import *
+from core.database import db
+from router import mongo_search_router, es_search_router
 
 def get_server():
     server = FastAPI(
@@ -40,3 +42,6 @@ async def mongodb_ping():
         return 200
     except ConnectionError:
         raise HTTPException(status_code=503, detail="Unable to connect to MongoDB")
+    
+app.include_router(mongo_search_router.router, tags=['MongoDB'])
+app.include_router(es_search_router.router, tags=['Elasticsearch'])
