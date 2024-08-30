@@ -6,6 +6,7 @@ from core.database import collection, es, ELASTICSEARCH_INDEX
 
 def move_to_elasticsearch():
     # MongoDB에서 데이터 읽기
+    # documents = collection.find().skip(0).limit(100)   # search_after 테스트를 위해 15000개의 데이터만 불러옴
     documents = collection.find()
     
     actions = (transform_data(doc) for doc in documents)

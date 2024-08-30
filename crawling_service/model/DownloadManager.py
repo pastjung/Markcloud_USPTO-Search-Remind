@@ -24,6 +24,7 @@ class DownloadManager:
 
     # URL 목록을 주어진 크기로 나누는 함수
     def chunk(self, urls, chunks=5):
+        # return [urls[i:1] for i in range(0, len(urls), chunks)]           # 테스트용 코드
         return [urls[i:i + chunks] for i in range(0, len(urls), chunks)]
     
     # 주어진 zip 파일의 압축 해제
