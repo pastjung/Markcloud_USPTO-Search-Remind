@@ -19,7 +19,7 @@ refresh_token_expires = timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
 
 def create_access_token(user_id: str):
     claim={"user_id": user_id}
-    claim.update({"exp": datetime.now(timezone.utc) + access_token_expires})
+    claim.update({"exp": datetime.now(timezone.utc) + access_token_expires})    # timezone.utc : 세계 표준 시간 UTC로 현재 시간 설정, datetime.now() : 현재 로컬 컴퓨터의 시간 설정
     access_token = jwt.encode(claim, SECRET_KEY, algorithm=ALGORITHM)
     return access_token
 
