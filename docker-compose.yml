@@ -22,7 +22,7 @@ services:
     
   user_db:
     image: mariadb:latest
-    container_name: 'user_db-cotainer'
+    container_name: 'user_db-container'
     restart: always
     environment:
       - "MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}"  # 루트 사용자 비밀번호
